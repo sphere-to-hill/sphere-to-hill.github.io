@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>From the Sphere to the Hill</title>
+<meta name="description" content="A closed-form baseline and dimensionless features let an 8-parameter head recover the analytic curvature coefficient and a 1,250-parameter head lower the median induced-voltage error on held-out terrain tiles from 5.41% to 1.88%. NeurIPS 2026.">
+<meta property="og:title" content="From the Sphere to the Hill">
+<meta property="og:description" content="Closed-Form Anchors for Boundary-Integral Surrogates on Real Terrain. NeurIPS 2026.">
+<meta property="og:image" content="https://sphere-to-hill.github.io/static/img/teaser.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://sphere-to-hill.github.io/">
+<link rel="stylesheet" href="static/css/site.css">
+</head>
+<body>
+
+<header class="hero">
+  <p class="venue">NeurIPS 2026</p>
+  <h1>From the Sphere to the Hill</h1>
+  <p class="subtitle">Closed-Form Anchors for Boundary-Integral Surrogates on Real Terrain</p>
+  <p class="authors">
+    <span>Stephane Zsoldos</span>
+    <span>Therice Morris</span>
+    <span>Varundev Sukhil</span>
+    <span>Benjamin Wetherfield</span>
+  </p>
+  <p class="affil">Exponent, Inc</p>
+  <nav class="links" aria-label="Paper resources">
+    <a class="btn" href="https://neurips.cc/virtual/2026/poster/155758">
+      <svg aria-hidden="true" viewBox="0 0 16 16"><path d="M4 1.5h5.5L13 5v9.5H4z M9.5 1.5V5H13 M6 8h5 M6 10.5h5 M6 13h3"/></svg>Paper</a>
+    <a class="btn" href="static/poster.pdf">
+      <svg aria-hidden="true" viewBox="0 0 16 16"><path d="M2 3h12v9H2z M5 14.5h6 M8 12v2.5"/></svg>Poster</a>
+    <a class="btn" href="#citation">
+      <svg aria-hidden="true" viewBox="0 0 16 16"><path d="M3 4h10 M3 7h10 M3 10h6 M11 9.5l2 2-2 2"/></svg>BibTeX</a>
+  </nav>
+</header>
+
+<main>
+
+<figure class="teaser wide">
+  <img src="static/img/teaser.png" width="2401" height="874"
+       alt="A strip of terrain under an energized transmission line drawn in red and a de-energized line in grey. A blue colour map on the ground is strongest directly under the energized line.">
+  <figcaption>
+    An energized transmission line (red, with charges q<sub>k</sub>) induces on the
+    grounded terrain S a surface charge density σ of opposite sign (−q). The heatmap shows |σ| from a
+    dense boundary-element method (BEM) solution for equal charges on the energized conductors. A
+    nearby de-energized line (grey) floats to an induced voltage V set by the line charges and by σ.
+  </figcaption>
+</figure>
+
+<p class="tldr">
+  <strong>TL;DR</strong>
+  A closed-form baseline carries the absolute scale of the induced charge, and small heads fed
+  dimensionless features learn only the correction to it. An 8-parameter head trained on canonical
+  shapes recovers 94.8% of the analytic curvature coefficient +1/(4π) on average over three
+  training seeds. On 15 lines over 7 terrain tiles, each tile held out in turn, a 1,250-parameter head
+  trained on dense-solver labels lowers the median induced-voltage error, as a fraction of the source
+  potential, from 5.41% to 1.88%. The application supports wildfire mitigation, through the voltage
+  induced on de-energized lines.
+</p>
+
+<section id="abstract">
+  <h2>Abstract</h2>
+  <p>
+    Analysing electrostatic induction on transmission lines in real-world power distribution systems
+    requires the induced surface charge density σ on overhead-line corridors at deployment scale.
+    Dense direct boundary-element method (BEM) solvers for the Laplace boundary integral equation
+    (BIE) cost O(N<sup>2</sup>) memory and O(N<sup>3</sup>) time. Fast multipole solvers are
+    near-linear per solve but still need a mesh, singular quadrature and an iterative solve. A recipe
+    is presented for training cheap surrogates of partial differential equations from canonical closed
+    forms (flat ground, grounded sphere) and a few dense-solver labels beyond them. The surrogates are
+    supervised against the closed forms because the natural self-supervised alternative, learning the
+    layer-potential operator A<sub>θ</sub> and minimising the BIE residual, admits non-physical
+    solutions through a rescaling degeneracy between A<sub>θ</sub> and σ, even on canonical
+    geometries. A small neural correction to a closed-form local-tangent-plane baseline is trained
+    against the 2-term identity σ = −(∇φ·n̂)/(2π) + Hφ/(4π), exact on flat ground and the grounded
+    sphere (Theorems 2 and 3), using SE(3)- and scale-invariant dimensionless features derived from
+    this identity. An 8-parameter linear head (seed 0) recovers 98.3% of the analytic curvature
+    coefficient +1/(4π) from data, and 89.1% and 97.0% with seeds 1 and 2, so after training it is
+    the 2-term identity with a fitted coefficient. On a synthetic curved patch, where no closed form
+    exists, its relative root-mean-square error in σ against dense BEM is 2.0%, and on the grounded
+    sphere it stays at 1.2% for positive and 1.4% for negative source charges spanning 12 orders of
+    magnitude. This scale invariance comes from the non-dimensionalised representation. DeepONet, Set
+    Transformer, and Fourier neural operator (FNO) baselines lack it on raw dimensional inputs, and FNO
+    and DeepONet acquire it with this representation. A heuristic scale (Proposition 1) indicates when
+    this identity applies. Beyond these geometries, a second head, exactly linear in the charges with
+    coefficients learned from the local terrain shape, is trained on a few dense-BEM solutions. On 15
+    industrial transmission lines over 7 independent terrain tiles, each tile held out in turn, this
+    corridor head attains a median induced-voltage error of 1.88% of the source potential along a
+    parallel victim path, compared with 5.41% for the closed-form baseline, and a median σ error
+    against dense BEM of 6.44%, compared with 7.73%. It has 1,250 parameters (5.0 kB) and runs in
+    seconds on one CPU core at O(10<sup>4</sup>) surface vertices (cost O(NK) for K charges).
+  </p>
+</section>
+
+<section id="method">
+  <h2>Method</h2>
+
+  <div class="identity wide">
+    <figure>
+      <img src="static/img/tilted_plane.svg" alt="Side view of a tilted plane with a charge above it and its mirror image below. The tangent plane at the surface point is the plane itself.">
+      <figcaption><strong>Theorem 2.</strong> On a plane the anchor is the exact image-charge solution.</figcaption>
+    </figure>
+    <figure class="identity-eq">
+      <img src="static/img/eq_identity.svg" alt="sigma equals minus grad phi-source dot n over 2 pi, the anchor, plus H phi-source over 4 pi, the curvature term.">
+      <figcaption>The two-term identity. The first term is the anchor σ<sub>flat</sub>, the second the curvature term.</figcaption>
+    </figure>
+    <figure>
+      <img src="static/img/sphere_geometry.svg" alt="Cross-section of a grounded sphere of radius R with a charge plus q at distance d and its Kelvin image minus q R over d inside.">
+      <figcaption><strong>Theorem 3.</strong> On a grounded sphere the two terms together are exact.</figcaption>
+    </figure>
+  </div>
+
+  <ol class="pipeline wide" aria-label="Pipeline">
+    <li><span>Terrain points and source charges</span></li>
+    <li><span>Local quadratic fit: normal n̂, curvatures H, K, residual ρ, scale L</span></li>
+    <li><span>Anchor σ<sub>flat</sub> and seven dimensionless features</span></li>
+    <li><span>Small head gives δσ</span></li>
+    <li><span>σ = σ<sub>flat</sub> + δσ</span></li>
+  </ol>
+
+  <div class="grid2">
+    <p><strong>Anchor.</strong> For every surface point, σ<sub>flat</sub> is the image-charge density of
+      the point's own tangent plane. It is exact on any plane and approximate where the terrain is
+      only locally flat (Theorem 2). It carries the absolute scale of the solution and costs O(NK) for
+      N points and K charges, with no matrix, mesh connectivity or linear solve.</p>
+    <p><strong>Curvature term.</strong> On a grounded sphere, adding Hφ<sub>src</sub>/(4π) to the
+      anchor gives the exact Kelvin solution. On other smooth terrain the leading-order correction is
+      κ<sub>⊥</sub>φ<sub>src</sub>/(4π), with κ<sub>⊥</sub> the normal curvature along the level lines
+      of φ<sub>src</sub>, and its average over directions is again Hφ<sub>src</sub>/(4π).</p>
+    <p><strong>Features.</strong> Seven dimensionless ratios: the source field (φ<sub>src</sub> and its
+      normal and tangential gradients), the local shape (mean and Gaussian curvature, fit residual) and
+      the bilinear Hφ<sub>src</sub>, scaled by the local length L and by
+      Q<sub>ref</sub> = max|q<sub>k</sub>|. The normal, curvatures and residual come from a quadratic
+      fit to the 30 nearest vertices. With unique nearest neighbours, the features are unchanged by
+      translations, rotations about the vertical and a joint rescaling of positions and charges by
+      positive factors, so a model trained at one charge scale keeps its accuracy at any other.</p>
+    <p><strong>Supervision.</strong> The target is a closed form where one exists and a dense
+      boundary-element label elsewhere. Learning the operator from the BIE residual instead is
+      degenerate: the residual cannot tell (A, σ) from (cA, σ/c). Trained at the σ network's
+      learning rate for 200k steps, the learned kernel ends 86% away from 1/r.</p>
+  </div>
+
+  <p><strong>Two heads.</strong> An 8-parameter linear head tests whether the closed-form coefficient
+    can be learned from data. The model for real terrain is an additive head with 1,250 parameters,
+    exactly linear in the charges. A 3→32→32→2 ReLU multilayer perceptron maps the local shape
+    g<sub>i</sub> = (H<sub>i</sub>L<sub>i</sub>, K<sub>i</sub>L<sub>i</sub><sup>2</sup>,
+    ρ<sub>i</sub>/L<sub>i</sub>), which does not depend on the sources, to the coefficients of two
+    source channels added to the sign-correct anchor σ<sub>flat</sub><sup>|h|</sup>:</p>
+  <p class="equation"><img src="static/img/eq_additive.svg" alt="sigma-i equals the sign-correct anchor plus c-zero of g-i times phi-source over L-i plus c-one of g-i times grad phi-source dot n-i."></p>
+</section>
+
+<section id="sphere">
+  <h2>The identity on a grounded sphere</h2>
+  <p>
+    A charge q sits at distance d from the centre of a grounded sphere of radius R. The anchor treats
+    each surface point as if its tangent plane were the whole ground. Beyond the horizon seen from the
+    charge, where the charge lies below the tangent plane, it even has the wrong sign. Adding the
+    curvature term Hφ<sub>src</sub>/(4π), with H = −1/R, gives the Kelvin density at every point and
+    every distance. The curves are computed in the browser from the closed forms.
+  </p>
+  <div class="demo wide" id="sphere-demo">
+    <div class="demo-controls">
+      <label for="d-slider">Distance of the charge, d/R</label>
+      <input type="range" id="d-slider" min="1.1" max="4" step="0.01" value="2">
+      <output id="d-value" for="d-slider">2.00</output>
+      <button type="button" id="d-play" class="btn small">Play</button>
+    </div>
+    <div class="demo-body">
+      <svg id="sphere-schematic" viewBox="0 0 300 336" role="img" aria-label="Grounded sphere with the source charge, its Kelvin image and the induced charge density drawn around the surface."></svg>
+      <div class="chart" id="sphere-chart"></div>
+    </div>
+    <div class="readout" id="sphere-readout"></div>
+    <p class="sr-only" id="sphere-live" aria-live="polite"></p>
+  </div>
+</section>
+
+<section id="results">
+  <h2>Results</h2>
+
+  <h3>Scale invariance over 12 orders of magnitude of charge</h3>
+  <p>
+    Relative RMS error in σ against the magnitude of the test charge. The supplementary code evaluates
+    the paper's checkpoints for (a) and (b) and retrains the networks of (c). Training charges are drawn
+    from N(0, 1), and the shaded band 0.3&nbsp;≤&nbsp;|q|&nbsp;≤&nbsp;3 holds 76% of them. Blue curves
+    use the dimensionless features and the anchor. Orange curves use raw inputs, or the same models with
+    the charge scale Q<sub>ref</sub> pinned instead of computed.
+  </p>
+  <div class="panels wide" id="ood-panels"></div>
+  <ul class="notes">
+    <li><strong>(a) Flat ground.</strong> From |q| = 1 to 10<sup>−12</sup> the errors of the raw-input
+      networks grow by 7.4 (DeepONet), 10.3 (Set Transformer) and 12.0 (FNO) orders of magnitude.
+      Charge augmentation lowers the FNO curve but keeps its slope. The error of the 8-parameter head
+      stays within 0.11% at every tested magnitude. The anchor is exact on a plane, so this panel tests
+      scale invariance rather than accuracy.</li>
+    <li><strong>(b) Grounded sphere.</strong> On the paper's discretised test cap, the head's error is
+      1.2% for positive and 1.4% for negative charges at every magnitude, 41 and 34 times lower than
+      that of the anchor alone (49%). With the exact coefficient 1/(4π) the error is 1.0%, which
+      comes from the discretisation of the cap.</li>
+    <li><strong>(c) Same networks, dimensionless inputs.</strong> Given the dimensionless features and
+      the anchor, the errors of FNO and DeepONet no longer grow by orders of magnitude as |q| falls.
+      Pinning Q<sub>ref</sub> brings back the slope of −1. Scale invariance comes from the
+      representation, not the architecture.</li>
+  </ul>
+  <details class="data"><summary>Data</summary><div id="ood-table"></div></details>
+
+  <h3>Real terrain: 15 lines on 7 held-out terrain tiles</h3>
+  <p>
+    The corridor model is the additive head. The 15 lines sit on 7 independent terrain tiles. Each tile
+    is held out in turn, the head is trained on the dense-BEM solutions of the lines on the other six
+    tiles with the lines weighted equally, and each line's error is the mean over three seeds.
+    ε<sub>V</sub> is the RMS error of the potential that σ induces along a victim path parallel to the
+    line, 30 m to the side and at least 10 m above the terrain, as a fraction of the RMS source
+    potential. The median ε<sub>V</sub> falls from 5.41% for the
+    anchor to 1.88% for the head, lower on all 15 lines, and the median relative RMS error in σ from
+    7.73% to 6.44%, lower on 14 of them. From two training tiles on, the median held-out ε<sub>V</sub>
+    stays between 1.78% and 1.92% (seed 0).
+  </p>
+  <div class="chart-head wide">
+    <div class="segmented" role="group" aria-label="Error shown">
+      <button type="button" class="seg" data-metric="eV" aria-pressed="true">Induced-voltage error ε<sub>V</sub></button>
+      <button type="button" class="seg" data-metric="es" aria-pressed="false">Error in σ</button>
+    </div>
+  </div>
+  <div class="chart wide" id="lines-chart"></div>
+  <p class="caption">Held-out error per line (Table 3 of the paper). Each row joins the anchor to the
+    head, and the vertical lines mark the medians over the 15 lines. Letters A–G are the paper's names
+    for seven of the lines.</p>
+  <details class="data"><summary>Data</summary><div id="lines-table"></div></details>
+
+  <h3>What the learned head sees</h3>
+  <p>
+    The head sees the terrain only through its local fit, within about 23 m of each point. Two terms
+    of the Born series, an exact
+    expansion of σ around the anchor σ<sub>flat</sub> that needs no training, can be restricted to the
+    terrain within a radius R of each point. At R = 25 m this is about the neighbourhood of the head's
+    local fit. On the 9 lines whose charges all stay at least 12 m above the terrain, the head (1.29%)
+    beats the two terms restricted to 25 m (1.89%) or 50 m (1.47%) on 8 of the 9 lines. With 400 m of
+    terrain the two terms reach 0.26%: the error left by the head is carried by terrain beyond its
+    neighbourhood.
+  </p>
+  <div class="chart narrow" id="locality-chart"></div>
+  <p class="caption">Median ε<sub>V</sub> over the 9 lines (Table 11 of the paper). Without a radius (∞)
+    the two terms are less accurate than at 400 m, because the labels are solved on a truncated patch,
+    which accumulates charge along its edges.</p>
+  <details class="data"><summary>Data</summary><div id="locality-table"></div></details>
+
+  <h3>Cost</h3>
+  <table class="cost">
+    <thead><tr><th></th><th>Dense BEM</th><th>Surrogate</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Storage at N = 10,908</th><td>0.95 GB (peak 2.25 GB)</td><td>no matrix</td></tr>
+      <tr><th scope="row">Time at N = 10,908, one CPU core</th><td>11.5 s (assembly and a direct LU solve), 2.1 s (assembly and the iterative solver GMRES)</td><td>1.5 s</td></tr>
+      <tr><th scope="row">Largest line</th><td>about 0.9 TB of matrix. The matrix-free label solve took 62 min on a GPU.</td><td>about 1 h on one core (extrapolated)</td></tr>
+    </tbody>
+  </table>
+  <p>
+    The surrogate's cost is that of evaluating φ<sub>src</sub> and its normal derivative, O(NK), so on
+    the largest line it would take about an hour on one core, comparable to the 62 min of the
+    matrix-free label solve on a GPU. Its advantage therefore lies in needing no matrix, mesh
+    connectivity or linear solve.
+  </p>
+</section>
+
+<section id="limitations">
+  <h2>Limitations</h2>
+  <ul>
+    <li>The head is local. It cannot reach the part of the correction carried by terrain well beyond its
+      neighbourhood. On the 9 lines whose charges all stay at least 12 m above the terrain, two Born
+      terms given 200 m of terrain or more have the lower induced-voltage error on at least 8 of the 9
+      lines.</li>
+    <li>Generalisation between tiles of real terrain is shown on 15 lines over only 7 independent tiles.
+      The tile, not the line, is the unit of generalisation.</li>
+    <li>Terrain detail finer than the grid of the terrain model changes σ by a median of 16% but the
+      induced voltage by only 0.10% (indicative estimates on synthetic corridors, whose lines hang
+      higher than the real ones). σ labels on real terrain are therefore uncertain at the ten-percent
+      level and voltage labels much less so, which is why the evaluation leads with the voltage.</li>
+    <li>Outside flat ground and the sphere the theory gives a leading-order term and a heuristic scale
+      (Proposition 1), not a bound.</li>
+    <li>The model treats the ground as a perfect conductor. At 60 Hz, for soils up to
+      10<sup>4</sup> Ω·m, this adds an error below 10<sup>−4</sup> of the source potential.</li>
+  </ul>
+</section>
+
+<section id="citation">
+  <h2>Citation</h2>
+  <div class="bibtex">
+    <button type="button" class="btn small copy" id="copy-bib">Copy</button>
+<pre id="bib"><code>@inproceedings{zsoldos2026sphere,
+  title     = {From the Sphere to the Hill: Closed-Form Anchors for
+               Boundary-Integral Surrogates on Real Terrain},
+  author    = {Zsoldos, Stephane and Morris, Therice and Sukhil, Varundev
+               and Wetherfield, Benjamin},
+  booktitle = {Advances in Neural Information Processing Systems},
+  year      = {2026}
+}</code></pre>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <p>The numbers on this page are printed in the paper or come from its supplementary code. The 94.8%
+    in the TL;DR is the mean of the 98.3%, 89.1% and 97.0% that the paper prints for seeds 0, 1 and 2.
+    The sphere figure is computed in the browser from the closed forms.</p>
+</footer>
+
+<script src="static/data/data.js"></script>
+<script src="static/js/site.js"></script>
+</body>
+</html>

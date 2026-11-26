@@ -1,0 +1,175 @@
+{
+ "source": "paper Table 3 and Table 11, camera-ready of 7 November 2026",
+ "lines": [
+  {
+   "tile": 1,
+   "line": 1,
+   "letter": "",
+   "eV_anchor": 8.72,
+   "eV_head": 3.81,
+   "es_anchor": 12.61,
+   "es_head": 8.31
+  },
+  {
+   "tile": 1,
+   "line": 2,
+   "letter": "",
+   "eV_anchor": 9.31,
+   "eV_head": 3.24,
+   "es_anchor": 12.26,
+   "es_head": 7.84
+  },
+  {
+   "tile": 2,
+   "line": 1,
+   "letter": "",
+   "eV_anchor": 10.89,
+   "eV_head": 1.88,
+   "es_anchor": 19.47,
+   "es_head": 16.03
+  },
+  {
+   "tile": 3,
+   "line": 1,
+   "letter": "E",
+   "eV_anchor": 2.36,
+   "eV_head": 0.68,
+   "es_anchor": 3.85,
+   "es_head": 3.2
+  },
+  {
+   "tile": 3,
+   "line": 2,
+   "letter": "F",
+   "eV_anchor": 5.41,
+   "eV_head": 1.38,
+   "es_anchor": 6.31,
+   "es_head": 4.52
+  },
+  {
+   "tile": 4,
+   "line": 1,
+   "letter": "",
+   "eV_anchor": 7.62,
+   "eV_head": 2.25,
+   "es_anchor": 18.25,
+   "es_head": 17.57
+  },
+  {
+   "tile": 5,
+   "line": 1,
+   "letter": "B",
+   "eV_anchor": 3.83,
+   "eV_head": 1.15,
+   "es_anchor": 6.42,
+   "es_head": 4.31
+  },
+  {
+   "tile": 5,
+   "line": 2,
+   "letter": "A",
+   "eV_anchor": 3.85,
+   "eV_head": 1.13,
+   "es_anchor": 6.6,
+   "es_head": 4.48
+  },
+  {
+   "tile": 5,
+   "line": 3,
+   "letter": "C",
+   "eV_anchor": 5.03,
+   "eV_head": 1.29,
+   "es_anchor": 7.73,
+   "es_head": 5.25
+  },
+  {
+   "tile": 5,
+   "line": 4,
+   "letter": "D",
+   "eV_anchor": 5.09,
+   "eV_head": 1.37,
+   "es_anchor": 7.68,
+   "es_head": 5.32
+  },
+  {
+   "tile": 6,
+   "line": 1,
+   "letter": "",
+   "eV_anchor": 12.44,
+   "eV_head": 3.69,
+   "es_anchor": 15.15,
+   "es_head": 14.88
+  },
+  {
+   "tile": 6,
+   "line": 2,
+   "letter": "",
+   "eV_anchor": 12.71,
+   "eV_head": 3.35,
+   "es_anchor": 15.15,
+   "es_head": 11.25
+  },
+  {
+   "tile": 6,
+   "line": 3,
+   "letter": "",
+   "eV_anchor": 3.37,
+   "eV_head": 0.79,
+   "es_anchor": 5.17,
+   "es_head": 4.61
+  },
+  {
+   "tile": 6,
+   "line": 4,
+   "letter": "",
+   "eV_anchor": 3.3,
+   "eV_head": 2.16,
+   "es_anchor": 4.34,
+   "es_head": 6.44
+  },
+  {
+   "tile": 7,
+   "line": 1,
+   "letter": "G",
+   "eV_anchor": 6.84,
+   "eV_head": 1.9,
+   "es_anchor": 12.3,
+   "es_head": 7.49
+  }
+ ],
+ "median": {
+  "eV_anchor": 5.41,
+  "eV_head": 1.88,
+  "es_anchor": 7.73,
+  "es_head": 6.44
+ },
+ "locality": {
+  "R_m": [
+   25,
+   50,
+   100,
+   200,
+   400,
+   null
+  ],
+  "eV_born2": [
+   1.89,
+   1.47,
+   1.09,
+   0.62,
+   0.26,
+   0.48
+  ],
+  "eV_head": 1.29,
+  "es_born2": [
+   6.44,
+   5.87,
+   4.93,
+   3.64,
+   2.75,
+   2.66
+  ],
+  "es_head": 4.61,
+  "n_lines": 9
+ }
+}
